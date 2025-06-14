@@ -3,6 +3,7 @@ import { fetchPokemon } from "@/utils/fetchPokemonApi";
 import { getPalette } from "@/utils/getPokemonColorPalette";
 import { getPaletteManually } from "@/utils/getPaletteManually";
 import PokemonColorPalette from "@/components/PokemonPalette";
+import { rgbStringToHex } from "@/utils/convertRGBToHex";
 
 export default function Home() {
   const [name, setName] = useState("");
@@ -20,9 +21,10 @@ export default function Home() {
       setImageUrl(data.image);
       setError("");
 
-      const colors = await getPalette(data.image, 4);
-      setPalette(colors);
-      const colorsM = await getPaletteManually(data.image, 6, 0.8);
+      const colors = await getPalette(data.image, 3);
+      const colorsHex = colors.map(color => rgbStringToHex(color))
+      setPalette(colorsHex);
+      const colorsM = await getPaletteManually(data.image, 3, 0.4);
       setPaletteM(colorsM);
     } catch (error) {
       console.error("Error fetching Pokémon data:", error);
@@ -41,8 +43,8 @@ export default function Home() {
           type="text"
           value={name}
           onChange={(e) => setName(e.target.value)}
-          placeholder="e.g., pikachu"
-          className="px-3 py-2 rounded border"
+          placeholder="Search a pokemon (e.g. pikachu)"
+          className="px-3 py-2 rounded border w-[18rem]"
         />
         <button onClick={handleSearch} className="bg-blue-500 text-white px-4 py-2 rounded">
           Search
@@ -52,29 +54,37 @@ export default function Home() {
       {error && <p className="text-red-500">{error}</p>}
 
       {pokemon && (
-        <div className="mt-6 text-center">
-          <h2 className="text-xl font-semibold capitalize">{pokemon.name}</h2>
-          <img src={pokemon.image} alt={pokemon.name} className="w-128 h-128 object-contain mx-auto" />
+        <div className="flex flex-col items-center gap-6">
+          <div className="text-center">
+            <img src={pokemon.image} alt={pokemon.name} className="w-86 h-86 object-contain mx-auto" />
+          </div>
 
-          {/* {palette.length > 0 && (
-            <div className="flex justify-center mt-4 gap-2">
-              {palette.map((color, idx) => (
-                <div
-                  key={idx}
-                  className="w-12 h-12 rounded shadow"
-                  style={{ backgroundColor: color }}
-                  title={color}
-                />
-              ))}
-            </div>
-          )}
+          <div>
+            <h2 className="text-xl mx-4 my-4 font-semibold capitalize">{pokemon.name}</h2>
+            {palette.length > 0 && (
+              <div className="">
+                <p className="mx-4">Auto Mode (using colorthief)</p>
+                <div className="flex justify-center gap-4">
+                  {palette.map((color, idx) => (
+                    <div className="">
+                      <div
+                        key={color}
+                        className="w-24 h-24 rounded"
+                        style={{ backgroundColor: color }}
+                      ></div>
+                      <div>{color}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
 
-          {paletteM.length > 0 && (
+            {/* {paletteM.length > 0 && (
             <div className="flex justify-center mt-4 gap-2">
               {paletteM.map((color, idx) => (
                 <div
                   key={idx}
-                  className="w-12 h-12 rounded shadow"
+                  className="w-24 h-24 rounded shadow"
                   style={{ backgroundColor: color }}
                   title={color}
                 />
@@ -82,8 +92,9 @@ export default function Home() {
             </div>
           )} */}
 
-          <div className="flex justify-center mx-4">
-            <PokemonColorPalette imageUrl={imageUrl} />
+            <div className="flex justify-center mx-4">
+              <PokemonColorPalette imageUrl={imageUrl} />
+            </div>
           </div>
         </div>
       )}

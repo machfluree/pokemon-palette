@@ -34,17 +34,22 @@ const PokemonColorPalette = ({ imageUrl }: Props) => {
    }, [imageUrl]);
 
    // Use hook to get palette from worker
-   const palette = useColorWorker(imageData, 5);
+   const palette = useColorWorker(imageData, 3);
+   console.log(palette)
    return (
-      <div>
+      <div className="py-4">
          <canvas ref={canvasRef} style={{ display: "none" }} />
-         <div className="flex space-x-2 mt-4">
+         <p>Manual Mode (using color worker)</p>
+         <div className="flex flex-row gap-4">
             {palette?.map((color) => (
-               <div
-                  key={color}
-                  className="w-16 h-16 rounded"
-                  style={{ backgroundColor: color }}
-               />
+               <div className="">
+                  <div
+                     key={color}
+                     className="w-24 h-24 rounded"
+                     style={{ backgroundColor: color }}
+                  ></div>
+                  <div>{color}</div>
+               </div>
             ))}
          </div>
       </div>
